@@ -13,4 +13,27 @@ class BaseRepository:
         return self._query(session, **kwargs).all()
 
     def create(self, session, obj_in):
-        raise NotImplementedError
+        obj = self.model(**obj_in.dict())
+        session.add(obj)
+        session.commit()
+        return obj
+
+    def delete(self, session, *_, **kwargs):
+        obj = self.get(session, **kwargs)
+        if obj:
+            session.delete(obj)
+            session.commit()
+            return True
+        return False
+
+    def update(self, session, obj_id, obj_in):
+        obj = session.query(self.model).filter(self.model.id == obj_id)
+        if not obj:
+            return False
+        obj_data = obj_in.dict(exclude_unset=True)
+        for key, value in obj_data.items():
+            setattr(obj, key, value)
+        session.add(obj)
+        session.commit()
+        session.refresh(obj)
+        return obj

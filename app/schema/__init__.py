@@ -1,1 +1,2 @@
-from .employee import EmployeeBase
+from .employee import EmployeeBase, EmployeeIn
+from .vacation import VacationBase, VacationIn
